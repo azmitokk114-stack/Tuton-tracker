@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tuton Tracker UT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --purple: #E4D3F6;
+      --purple-d: #C6A0E8;
+      --pink: #FCDCE9;
+      --pink-d: #F19DBF;
+      --blue: #D3ECFB;
+      --blue-d: #8FC9EE;
+      --mint: #D7F4E1;
+      --mint-d: #84D2A4;
+      --yellow: #FDF1C4;
+      --yellow-d: #E8C55A;
+      --peach: #FCE1CB;
+      --peach-d: #EFAE79;
+      --lilac2: #E5DAF9;
+      --lilac2-d: #B892E6;
+      --coral: #FF8FA8;
+      --coral-d: #FF6F93;
+      --cream: #FFFBF3;
+      --plum: #503A66;
+      --plum-soft: #8674A0;
+      --line: #EADCF7;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 14px 50px;
+      font-family: 'Nunito', sans-serif;
+      color: var(--plum);
+      background:
+        radial-gradient(circle at 10% 5%, #FBEEFF 0%, transparent 35%),
+        radial-gradient(circle at 90% 95%, #E6FBEF 0%, transparent 35%),
+        #FDF6EA;
+      min-height: 100vh;
+    }
+
+    .sheet {
+      width: 100%;
+      max-width: 1220px;
+      margin: 0 auto;
+      background: var(--cream);
+      border-radius: 28px;
+      border: 2.5px dashed #E9D9C4;
+      padding: 26px 30px 34px;
+      box-shadow: 0 14px 34px rgba(80, 58, 102, 0.14);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sheet-auth {
+      max-width: 850px;
+    }
+
+    .sheet::before,
+    .sheet::after {
+      content: "";
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      opacity: .35;
+      filter: blur(2px);
+      z-index: 0;
+    }
+
+    .sheet::before {
+      background: var(--pink);
+      top: -60px;
+      left: -40px;
+    }
+
+    .sheet::after {
+      background: var(--mint);
+      bottom: -60px;
+      right: -40px;
+    }
+
+    /* COMPONENT: PAGE SWITCHING */
+    .page-view {
+      display: none;
+    }
+
+    .page-view.active {
+      display: block;
+    }
+
+    /* HEADER GENERAL */
+    h1.brand {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 800;
+      font-size: 2.5rem;
+      margin: 2px 0 0;
+      color: var(--coral-d);
+      -webkit-text-stroke: 2px #fff;
+      paint-order: stroke fill;
+      text-shadow: 3px 4px 0 var(--purple-d);
+    }
+
+    .uni-line {
+      font-family: 'Baloo 2';
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--plum-soft);
+      margin: 2px 0 0;
+    }
+
+    /* AUTH FORM STYLES */
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width:768px) {
+      .grid-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 8px 18px rgba(80, 58, 102, 0.08);
+      border: 1.5px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .panel h2 {
+      font-family: 'Baloo 2';
+      font-size: 1.1rem;
+      margin: 0 0 4px;
+      color: var(--plum);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px dashed var(--line);
+      padding-bottom: 8px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-group label {
+      font-family: 'Baloo 2';
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: var(--plum-soft);
+    }
+
+    .input-field {
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-family: 'Nunito';
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--plum);
+      outline: none;
+      background: #FCFAFF;
+    }
+
+    .input-field:focus {
+      border-color: var(--coral);
+      background: #fff;
+    }
+
+    .course-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .course-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #FBF8FF;
+      border: 1px solid #EFE6FA;
+      border-radius: 12px;
+      padding: 8px 12px;
+      gap: 8px;
+    }
+
+    .course-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Baloo 2';
+      font-weight: 600;
+      font-size: 0.9rem;
+      flex: 1;
+    }
+
+    .course-icon-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .btn-del {
+      border: none;
+      background: transparent;
+      color: #DBA4B8;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .btn-edit-item {
+      border: none;
+      background: transparent;
+      color: var(--plum-soft);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .add-course-box {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .select-icon {
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      padding: 0 8px;
+      background: #FCFAFF;
+      font-size: 1.1rem;
+      outline: none;
+    }
+
+    .btn-primary {
+      width: 100%;
+      border: none;
+      background: linear-gradient(135deg, var(--coral), #FFB199);
+      color: #fff;
+      font-family: 'Baloo 2';
+      font-weight: 700;
+      font-size: 1.05rem;
+      border-radius: 14px;
+      padding: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255, 143, 168, 0.3);
+      margin-top: 6px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      border: none;
+      background: var(--purple);
+      color: var(--plum);
+      font-family: 'Baloo 2';
+      font-weight: 700;
+      font-size: 0.9rem;
+      border-radius: 12px;
+      padding: 0 16px;
+      cursor: pointer;
+    }
+
+    .auth-toggle {
+      text-align: center;
+      font-family: 'Baloo 2';
+      font-size: 0.88rem;
+      color: var(--plum-soft);
+      margin-top: 10px;
+    }
+
+    .auth-toggle a {
+      color: var(--coral-d);
+      text-decoration: none;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* TRACKER MAIN STYLES */
+    .top-row {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1.6fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 6px;
+    }
+
+    .photo-box {
+      background: linear-gradient(160deg, #F3E8FF, #E7F6FF);
+      border-radius: 20px;
+      border: 3px solid #fff;
+      outline: 2px solid var(--purple-d);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      text-align: center;
+      box-shadow: 0 6px 16px rgba(80, 58, 102, 0.1);
+    }
+
+    .photo-box p {
+      font-family: 'Baloo 2';
+      font-weight: 600;
+      font-size: 0.92rem;
+      margin: 0;
+      color: var(--plum);
+    }
+
+    .title-col {
+      text-align: center;
+      position: relative;
+      padding-top: 6px;
+    }
+
+    .jadwal-line {
+      font-family: 'Baloo 2';
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--plum);
+      margin: 8px 0 0;
+      background: var(--pink);
+      display: inline-block;
+      padding: 5px 18px;
+      border-radius: 14px;
+      border: 1.5px solid var(--pink-d);
+    }
+
+    .checklist-box {
+      background: #fff;
+      border-radius: 20px;
+      border: 1.5px solid var(--line);
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+    }
+
+    .checklist-box .clock {
+      position: absolute;
+      top: -16px;
+      right: -10px;
+      font-size: 2.1rem;
+      transform: rotate(8deg);
+    }
+
+    .checklist-box label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: 'Baloo 2';
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .checklist-box input[type=checkbox] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--coral);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .checklist-box input[type=checkbox]:checked {
+      background: var(--coral);
+    }
+
+    .checklist-box input[type=checkbox]:checked::after {
+      content: "✓";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .period-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 18px auto 20px;
+      z-index: 1;
+      font-family: 'Baloo 2';
+      font-weight: 600;
+      font-size: 0.98rem;
+      color: var(--plum-soft);
+    }
+
+    .table-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 8px;
+      box-shadow: 0 10px 24px rgba(80, 58, 102, 0.12);
+      overflow-x: auto;
+      margin-bottom: 22px;
+      border: 1.5px solid var(--line);
+    }
+
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+      min-width: 1080px;
+    }
+
+    thead th {
+      font-family: 'Baloo 2';
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--plum);
+      padding: 12px 8px 10px;
+      text-align: center;
+    }
+
+    thead .sdate {
+      display: block;
+      font-family: 'Nunito';
+      font-weight: 800;
+      font-size: 0.65rem;
+      color: var(--plum-soft);
+      margin-top: 3px;
+    }
+
+    th.head-course,
+    td.cell-course {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: #fff;
+      text-align: left;
+      min-width: 185px;
+    }
+
+    tbody td {
+      padding: 0;
+      border-top: 1px solid #F3ECFB;
+      vertical-align: middle;
+    }
+
+    .cell-course {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px !important;
+      font-family: 'Baloo 2';
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .cell-date {
+      padding: 8px !important;
+    }
+
+    .cell-date input {
+      width: 100%;
+      border: none;
+      background: #FBF7FF;
+      border-radius: 8px;
+      text-align: center;
+      font-family: 'Nunito';
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: var(--plum-soft);
+      outline: none;
+      padding: 7px 4px;
+    }
+
+    .head-1 {
+      background: var(--purple);
+    }
+
+    .cell-1 {
+      background: rgba(228, 211, 246, .38);
+    }
+
+    .head-2 {
+      background: var(--pink);
+    }
+
+    .cell-2 {
+      background: rgba(252, 220, 233, .38);
+    }
+
+    .head-3 {
+      background: var(--blue);
+    }
+
+    .cell-3 {
+      background: rgba(211, 236, 251, .38);
+    }
+
+    .head-4 {
+      background: var(--mint);
+    }
+
+    .cell-4 {
+      background: rgba(215, 244, 225, .38);
+    }
+
+    .head-5 {
+      background: var(--yellow);
+    }
+
+    .cell-5 {
+      background: rgba(253, 241, 196, .38);
+    }
+
+    .head-6 {
+      background: var(--peach);
+    }
+
+    .cell-6 {
+      background: rgba(252, 225, 203, .38);
+    }
+
+    .head-7 {
+      background: var(--lilac2);
+    }
+
+    .cell-7 {
+      background: rgba(229, 218, 249, .38);
+    }
+
+    .head-8 {
+      background: var(--purple);
+    }
+
+    .cell-8 {
+      background: rgba(228, 211, 246, .38);
+    }
+
+    .sess-cell {
+      padding: 8px 10px !important;
+    }
+
+    .chk-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+      font-family: 'Nunito';
+      font-weight: 700;
+      font-size: 0.68rem;
+      color: var(--plum-soft);
+      padding: 3px 0;
+    }
+
+    .chk-row+.chk-row {
+      border-top: 1px dashed rgba(80, 58, 102, 0.15);
+      margin-top: 2px;
+      padding-top: 5px;
+    }
+
+    .chk {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      border: 2px solid var(--plum-soft);
+      background: #fff;
+      cursor: pointer;
+      position: relative;
+      flex: none;
+    }
+
+    .chk:checked {
+      background: var(--coral);
+      border-color: var(--coral);
+    }
+
+    .chk:checked::after {
+      content: "✓";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .bottom-row {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr 1fr;
+      gap: 18px;
+    }
+
+    @media (max-width:880px) {
+
+      .bottom-row,
+      .top-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel textarea {
+      width: 100%;
+      min-height: 110px;
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-family: 'Nunito';
+      font-size: 0.86rem;
+      color: var(--plum);
+      resize: vertical;
+      outline: none;
+      background: #FCFAFF;
+    }
+
+    .todo-list {
+      list-style: none;
+      margin: 0 0 10px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: #FBF8FF;
+      border: 1px solid #EFE6FA;
+      border-radius: 11px;
+      padding: 8px 10px;
+    }
+
+    .todo-item input[type=text] {
+      flex: 1;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-family: 'Nunito';
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--plum);
+    }
+
+    .todo-item.done input[type=text] {
+      text-decoration: line-through;
+      color: #C4B7D6;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .user-badge-info {
+      font-family: 'Baloo 2';
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--coral-d);
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: #fff;
+      border: 1.5px solid var(--purple-d);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--plum-soft);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #6FCF97;
+    }
+
+    .logout-btn {
+      border: 1.5px solid var(--pink-d);
+      background: #fff;
+      color: #C6637E;
+      font-family: 'Baloo 2';
+      font-weight: 600;
+      font-size: 0.78rem;
+      border-radius: 999px;
+      padding: 6px 14px;
+      cursor: pointer;
+    }
+
+    .edit-btn {
+      border: 1.5px solid var(--purple-d);
+      background: var(--purple);
+      color: var(--plum);
+      font-family: 'Baloo 2';
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: 12px;
+      padding: 5px 14px;
+      cursor: pointer;
+    }
+
+    /* MODAL STYLES */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(80, 58, 102, 0.4);
+      backdrop-filter: blur(3px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 24px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      border: 2px solid var(--line);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HALAMAN 1: REGISTRASI & PENGATURAN -->
+  <div id="registerView" class="page-view active">
+    <div class="sheet sheet-auth">
+      <div style="text-align:center; margin-bottom:20px;">
+        <h1 class="brand">Tuton Tracker</h1>
+        <p class="uni-line">✦ Buat Akun & Mata Kuliah Kamu ✦</p>
+      </div>
+      <div class="grid-container">
+        <div class="panel">
+          <h2>📝 Registrasi Akun</h2>
+          <div class="form-group">
+            <label>Nama Lengkap</label>
+            <input type="text" id="regNama" class="input-field" placeholder="Nama kamu...">
+          </div>
+          <div class="form-group">
+            <label>Buat Kata Sandi</label>
+            <input type="password" id="regPass" class="input-field" placeholder="••••••••">
+          </div>
+          <button class="btn-primary" id="btnRegister">Simpan Akun & Lanjut ➔</button>
+          <p class="auth-toggle">Sudah punya akun? <a id="goLogin">Masuk di sini</a></p>
+        </div>
+
+        <div class="panel">
+          <h2>📚 Mata Kuliah Saya</h2>
+          <ul class="course-list" id="regCourseList"></ul>
+          <div class="add-course-box">
+            <select id="iconSelect" class="select-icon">
+              <option value="📘">📘</option>
+              <option value="🔤">🔤</option>
+              <option value="🗣️">🗣️</option>
+              <option value="🕌">🕌</option>
+              <option value="📈">📈</option>
+              <option value="🏢">🏢</option>
+            </select>
+            <input type="text" id="courseInput" class="input-field" placeholder="Nama Matkul..." style="flex:1;">
+            <button class="btn-secondary" id="btnAddCourse">Tambah</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HALAMAN 2: LOGIN -->
+  <div id="loginView" class="page-view">
+    <div class="sheet sheet-auth">
+      <div style="text-align:center; margin-bottom:20px;">
+        <h1 class="brand">Tuton Tracker</h1>
+        <p class="uni-line">✦ Masuk ke Akun Kamu ✦</p>
+      </div>
+      <div class="panel" style="max-width:400px; margin:0 auto;">
+        <h2>🔑 Login Mahasiswa</h2>
+        <div class="form-group">
+          <label>Nama Lengkap</label>
+          <input type="text" id="loginNama" class="input-field" placeholder="Masukkan nama kamu...">
+        </div>
+        <div class="form-group">
+          <label>Kata Sandi</label>
+          <input type="password" id="loginPass" class="input-field" placeholder="••••••••">
+        </div>
+        <button class="btn-primary" id="btnLogin">Masuk Ke Tracker ➔</button>
+        <p class="auth-toggle">Belum punya akun? <a id="goReg">Daftar di sini</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- HALAMAN 3: UTAMA (TRACKER JADWAL) -->
+  <div id="trackerView" class="page-view">
+    <div class="sheet">
+      <div class="top-bar">
+        <div class="user-badge-info">Halo, <span id="displayNama">Mahasiswa</span>! 👋</div>
+        <div style="display:flex; gap:10px;">
+          <div class="status-pill"><span class="status-dot"></span><span id="statusText">Tersimpan</span></div>
+          <button class="logout-btn" id="btnLogout">Keluar Akun</button>
+        </div>
+      </div>
+
+      <div class="top-row">
+        <div class="photo-box">
+          <div style="font-size:2.4rem; margin-bottom:6px;">📚✏️</div>
+          <p>Belajar Hari Ini,<br>Untuk Masa Depan Nanti</p>
+        </div>
+        <div class="title-col">
+          <h1 class="brand">Tuton Tracker</h1>
+          <p class="uni-line">✦ Universitas Terbuka ✦</p>
+          <p class="jadwal-line">Jadwal Kuliah Semester 2026-2027 Ganjil</p>
+        </div>
+        <div class="checklist-box">
+          <span class="clock">⏰</span>
+          <label><input type="checkbox" checked disabled> Disiplin</label>
+          <label><input type="checkbox" disabled> Hari Ini</label>
+          <label><input type="checkbox" disabled> Sukses</label>
+        </div>
+      </div>
+
+      <div class="period-bar">
+        <span>Periode Sesi: <b>14 September 2026</b> — <b>22 November 2026</b></span>
+        <button class="edit-btn" id="openModalBtn">⚙️ Edit / Olah Matkul</button>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr id="headRow">
+              <th class="head-course">Mata Kuliah</th>
+              <th class="head-date">Tanggal</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="bottom-row">
+        <div class="panel">
+          <h2>📝 Catatan</h2>
+          <textarea id="catatan" placeholder="Cek pengumuman tutorial di portal UT..."></textarea>
+        </div>
+        <div class="panel" style="text-align:center;">
+          <h2>🎯 Target Mingguan</h2>
+          <textarea id="target" placeholder="Tulis target minggu ini..."></textarea>
+        </div>
+        <div class="panel">
+          <h2>🗒️ To Do List</h2>
+          <ul class="todo-list" id="todoList"></ul>
+          <div style="display:flex; gap:7px;">
+            <input type="text" id="newTodoInput" class="input-field" placeholder="Tambah tugas..." style="flex:1;">
+            <button class="btn-secondary" id="addTodoBtn">Tambah</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDIT MATKUL -->
+  <div class="modal-overlay" id="courseModal">
+    <div class="modal-card panel">
+      <h2>📚 Kelola & Edit Mata Kuliah</h2>
+      <ul class="course-list" id="modalCourseList" style="max-height:240px;"></ul>
+      <div class="add-course-box">
+        <select id="modalIconSelect" class="select-icon">
+          <option value="📘">📘</option>
+          <option value="🔤">🔤</option>
+          <option value="🗣️">🗣️</option>
+          <option value="🕌">🕌</option>
+          <option value="📈">📈</option>
+          <option value="🏢">🏢</option>
+        </select>
+        <input type="text" id="modalCourseInput" class="input-field" placeholder="Nama Matkul Baru..." style="flex:1;">
+        <button class="btn-secondary" id="modalAddBtn">Tambah</button>
+      </div>
+      <button class="btn-primary" id="closeModalBtn" style="margin-top:12px;">Selesai & Simpan ➔</button>
+    </div>
+  </div>
+
+  <script>
+    const KEY_USER = "tuton_app_user";
+    const KEY_COURSES = "tuton_app_courses";
+    const KEY_TRACKER = "tuton_app_tracker_state";
+    const COLOR_PALETTE = ["#E4D3F6", "#FCDCE9", "#D3ECFB", "#D7F4E1", "#FDF1C4", "#FCE1CB"];
+    const SESSION_DATES = ["14–19 Sep", "21–26 Sep", "28 Sep–3 Okt", "5–10 Okt", "12–17 Okt", "19–24 Okt", "26–31 Okt", "2–22 Nov"];
+
+    let userAcc = JSON.parse(localStorage.getItem(KEY_USER)) || null;
+    let userCourses = JSON.parse(localStorage.getItem(KEY_COURSES)) || [
+      { name: "Manajemen", icon: "📘", color: "#E4D3F6" },
+      { name: "Bahasa Inggris", icon: "🔤", color: "#FCDCE9" }
+    ];
+    let trackerState = JSON.parse(localStorage.getItem(KEY_TRACKER)) || { dates: {}, checks: {}, catatan: "", target: "", todos: [] };
+
+    function switchPage(pageId) {
+      document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    /* RENDERING LIST MATKUL (DIGUNAKAN UNTUK REGISTRASI & MODAL EDIT) */
+    function renderCourseList(targetListId) {
+      const list = document.getElementById(targetListId);
+      list.innerHTML = "";
+      userCourses.forEach((c, idx) => {
+        list.innerHTML += `
+      <li class="course-item">
+        <div class="course-info">
+          <span class="course-icon-badge" style="background:${c.color}">${c.icon}</span>
+          <span>${c.name}</span>
+        </div>
+        <button class="btn-edit-item" onclick="renameCourse(${idx})">✏️ Edit</button>
+        <button class="btn-del" onclick="deleteCourse(${idx}, '${targetListId}')">✕</button>
+      </li>`;
+      });
+    }
+
+    function deleteCourse(idx, targetListId) {
+      if (userCourses.length <= 1) { alert("Minimal harus ada 1 mata kuliah!"); return; }
+      userCourses.splice(idx, 1);
+      localStorage.setItem(KEY_COURSES, JSON.stringify(userCourses));
+      renderCourseList(targetListId);
+    }
+
+    function renameCourse(idx) {
+      const newName = prompt("Ubah nama mata kuliah:", userCourses[idx].name);
+      if (newName && newName.trim()) {
+        userCourses[idx].name = newName.trim();
+        localStorage.setItem(KEY_COURSES, JSON.stringify(userCourses));
+        renderCourseList('regCourseList');
+        renderCourseList('modalCourseList');
+      }
+    }
+
+    /* REGISTRASI HANDLER */
+    document.getElementById('btnAddCourse').addEventListener('click', () => {
+      const input = document.getElementById('courseInput');
+      const val = input.value.trim();
+      if (!val) return;
+      userCourses.push({ name: val, icon: document.getElementById('iconSelect').value, color: COLOR_PALETTE[userCourses.length % COLOR_PALETTE.length] });
+      input.value = "";
+      localStorage.setItem(KEY_COURSES, JSON.stringify(userCourses));
+      renderCourseList('regCourseList');
+    });
+
+    document.getElementById('btnRegister').addEventListener('click', () => {
+      const nama = document.getElementById('regNama').value.trim();
+      const pass = document.getElementById('regPass').value;
+      if (!nama || !pass) { alert("Lengkapi nama dan kata sandi terlebih dahulu!"); return; }
+      if (userCourses.length === 0) { alert("Masukkan minimal 1 Mata Kuliah!"); return; }
+
+      userAcc = { nama, pass };
+      localStorage.setItem(KEY_USER, JSON.stringify(userAcc));
+      localStorage.setItem(KEY_COURSES, JSON.stringify(userCourses));
+      initTracker();
+      switchPage('trackerView');
+    });
+
+    /* LOGIN HANDLER */
+    document.getElementById('btnLogin').addEventListener('click', () => {
+      const nama = document.getElementById('loginNama').value.trim();
+      const pass = document.getElementById('loginPass').value;
+
+      if (userAcc && userAcc.nama.toLowerCase() === nama.toLowerCase() && userAcc.pass === pass) {
+        initTracker();
+        switchPage('trackerView');
+      } else {
+        alert("Nama atau Kata Sandi salah/belum terdaftar!");
+      }
+    });
+
+    document.getElementById('goLogin').addEventListener('click', () => switchPage('loginView'));
+    document.getElementById('goReg').addEventListener('click', () => switchPage('registerView'));
+    document.getElementById('btnLogout').addEventListener('click', () => switchPage('loginView'));
+
+    /* MODAL EDIT DI BERANDA HANDLER */
+    const modal = document.getElementById('courseModal');
+    document.getElementById('openModalBtn').addEventListener('click', () => {
+      renderCourseList('modalCourseList');
+      modal.classList.add('active');
+    });
+
+    document.getElementById('modalAddBtn').addEventListener('click', () => {
+      const input = document.getElementById('modalCourseInput');
+      const val = input.value.trim();
+      if (!val) return;
+      userCourses.push({ name: val, icon: document.getElementById('modalIconSelect').value, color: COLOR_PALETTE[userCourses.length % COLOR_PALETTE.length] });
+      input.value = "";
+      localStorage.setItem(KEY_COURSES, JSON.stringify(userCourses));
+      renderCourseList('modalCourseList');
+    });
+
+    document.getElementById('closeModalBtn').addEventListener('click', () => {
+      modal.classList.remove('active');
+      buildTable(); // Update tabel utama
+    });
+
+    /* TRACKER MAIN LOGIC */
+    function initTracker() {
+      document.getElementById('displayNama').textContent = userAcc ? userAcc.nama : "Mahasiswa";
+      buildHead();
+      buildTable();
+      buildTodos();
+      document.getElementById('catatan').value = trackerState.catatan || "";
+      document.getElementById('target').value = trackerState.target || "";
+    }
+
+    function buildHead() {
+      const headRow = document.getElementById('headRow');
+      headRow.innerHTML = `<th class="head-course">Mata Kuliah</th><th class="head-date">Tanggal</th>`;
+      SESSION_DATES.forEach((d, i) => {
+        headRow.innerHTML += `<th class="head-${i + 1}">Sesi ${i + 1}<span class="sdate">${d}</span></th>`;
+      });
+    }
+
+    function buildTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = "";
+      userCourses.forEach((course, ci) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="cell-course"><span class="course-icon-badge" style="background:${course.color}">${course.icon}</span><span>${course.name}</span></td>
+          <td class="cell-date"><input type="text" placeholder="cth. 15/9" value="${trackerState.dates[ci] || ''}" oninput="saveDate(${ci}, this.value)"></td>
+        `;
+        for (let si = 0; si < SESSION_DATES.length; si++) {
+          const sessionNum = si + 1;
+          const td = document.createElement('td');
+          td.className = `sess-cell cell-${sessionNum}`;
+
+          // Sesi 3, 5, 7 -> Absen, Diskusi, Tugas
+          // Sesi 1, 2, 4, 6, 8 -> Absen, Diskusi
+          let kinds = ["absen", "diskusi"];
+          if ([3, 5, 7].includes(sessionNum)) {
+            kinds = ["absen", "diskusi", "tugas"];
+          }
+
+          kinds.forEach(kind => {
+            const key = `${ci}-${si}-${kind}`;
+            const chk = document.createElement('input');
+            chk.type = "checkbox"; chk.className = "chk";
+            chk.checked = !!trackerState.checks[key];
+            chk.onclick = () => { trackerState.checks[key] = chk.checked; saveTracker(); };
+
+            const label = document.createElement('label'); label.className = "chk-row";
+            let labelText = "Absen";
+            if (kind === "diskusi") labelText = "Diskusi";
+            if (kind === "tugas") labelText = "Tugas";
+
+            label.appendChild(chk);
+            label.appendChild(document.createTextNode(labelText));
+            td.appendChild(label);
+          });
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      });
+    }
+
+    function saveDate(ci, val) { trackerState.dates[ci] = val; saveTracker(); }
+    function saveTracker() { localStorage.setItem(KEY_TRACKER, JSON.stringify(trackerState)); }
+
+    function buildTodos() {
+      const list = document.getElementById('todoList'); list.innerHTML = "";
+      (trackerState.todos || []).forEach((t, i) => {
+        list.innerHTML += `<li class="todo-item ${t.done ? 'done' : ''}"><input type="checkbox" class="chk" ${t.done ? 'checked' : ''} onclick="toggleTodo(${i})"> <input type="text" value="${t.text}" readonly></li>`;
+      });
+    }
+    function toggleTodo(i) { trackerState.todos[i].done = !trackerState.todos[i].done; saveTracker(); buildTodos(); }
+
+    document.getElementById('addTodoBtn').addEventListener('click', () => {
+      const input = document.getElementById('newTodoInput');
+      if (!input.value.trim()) return;
+      trackerState.todos.push({ text: input.value.trim(), done: false });
+      input.value = ""; saveTracker(); buildTodos();
+    });
+
+    document.getElementById('catatan').addEventListener('input', (e) => { trackerState.catatan = e.target.value; saveTracker(); });
+    document.getElementById('target').addEventListener('input', (e) => { trackerState.target = e.target.value; saveTracker(); });
+
+    // Auto Load
+    if (userAcc) { switchPage('loginView'); } else { renderCourseList('regCourseList'); switchPage('registerView'); }
+  </script>
+</body>
+
+</html>
