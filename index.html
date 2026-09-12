@@ -877,7 +877,7 @@
       </div>
 
       <div class="period-bar">
-        <span>Periode Sesi: <b>14 September 2026</b> — <b>22 November 2026</b></span>
+        <span>Periode Sesi: <b>14 September 2026</b> — <b>8 November 2026</b></span>
         <button class="edit-btn" id="openModalBtn">⚙️ Edit / Olah Matkul</button>
       </div>
 
@@ -940,7 +940,18 @@
     const KEY_COURSES = "tuton_app_courses";
     const KEY_TRACKER = "tuton_app_tracker_state";
     const COLOR_PALETTE = ["#E4D3F6", "#FCDCE9", "#D3ECFB", "#D7F4E1", "#FDF1C4", "#FCE1CB"];
-    const SESSION_DATES = ["14–19 Sep", "21–26 Sep", "28 Sep–3 Okt", "5–10 Okt", "12–17 Okt", "19–24 Okt", "26–31 Okt", "2–22 Nov"];
+
+    // Rentang tanggal disesuaikan persis dengan gambar
+    const SESSION_DATES = [
+      "14–20 Sep",
+      "21–27 Sep",
+      "28 Sep–12 Okt",
+      "5–11 Okt",
+      "12–26 Okt",
+      "19–25 Okt",
+      "26 Okt–9 Nov",
+      "2–8 Nov"
+    ];
 
     let userAcc = JSON.parse(localStorage.getItem(KEY_USER)) || null;
     let userCourses = JSON.parse(localStorage.getItem(KEY_COURSES)) || [
@@ -954,7 +965,7 @@
       document.getElementById(pageId).classList.add('active');
     }
 
-    /* RENDERING LIST MATKUL (DIGUNAKAN UNTUK REGISTRASI & MODAL EDIT) */
+    /* RENDERING LIST MATKUL */
     function renderCourseList(targetListId) {
       const list = document.getElementById(targetListId);
       list.innerHTML = "";
@@ -1050,7 +1061,7 @@
 
     document.getElementById('closeModalBtn').addEventListener('click', () => {
       modal.classList.remove('active');
-      buildTable(); // Update tabel utama
+      buildTable();
     });
 
     /* TRACKER MAIN LOGIC */
@@ -1106,9 +1117,14 @@
           const td = document.createElement('td');
           td.className = `sess-cell cell-${sessionNum}`;
 
-          let kinds = ["absen", "diskusi"];
-          if ([3, 5, 7].includes(sessionNum)) {
-            kinds = ["absen", "diskusi", "tugas"];
+          // Pembagian jenis checklist sesuai info di gambar:
+          // Sesi 1, 2, 4, 6, 8 -> Hanya Diskusi (+ Absen)
+          // Sesi 3, 5, 7 -> Hanya Tugas (+ Absen)
+          let kinds = ["absen"];
+          if ([1, 2, 4, 6, 8].includes(sessionNum)) {
+            kinds.push("diskusi");
+          } else if ([3, 5, 7].includes(sessionNum)) {
+            kinds.push("tugas");
           }
 
           kinds.forEach(kind => {
