@@ -236,6 +236,14 @@
       color: #DBA4B8;
       cursor: pointer;
       font-size: 1rem;
+      padding: 2px 6px;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-del:hover {
+      background: #FCE4EC;
+      color: #C62828;
     }
 
     .btn-edit-item {
@@ -958,7 +966,7 @@
           <span>${c.name}</span>
         </div>
         <button class="btn-edit-item" onclick="renameCourse(${idx})">✏️ Edit</button>
-        <button class="btn-del" onclick="deleteCourse(${idx}, '${targetListId}')">✕</button>
+        <button class="btn-del" onclick="deleteCourse(${idx}, '${targetListId}')" title="Hapus Matkul">✕</button>
       </li>`;
       });
     }
@@ -966,7 +974,9 @@
     function deleteCourse(idx, targetListId) {
       if (userCourses.length <= 1) { alert("Minimal harus ada 1 mata kuliah!"); return; }
       userCourses.splice(idx, 1);
+      delete trackerState.dates[idx];
       localStorage.setItem(KEY_COURSES, JSON.stringify(userCourses));
+      saveTracker();
       renderCourseList(targetListId);
     }
 
@@ -1061,22 +1071,41 @@
       });
     }
 
+    function clearRowJadwal(ci) {
+      if (confirm("Reset tanggal dan semua checklist untuk mata kuliah ini?")) {
+        delete trackerState.dates[ci];
+        SESSION_DATES.forEach((_, si) => {
+          ["absen", "diskusi", "tugas"].forEach(kind => {
+            delete trackerState.checks[`${ci}-${si}-${kind}`];
+          });
+        });
+        saveTracker();
+        buildTable();
+      }
+    }
+
     function buildTable() {
       const tbody = document.getElementById('tableBody');
       tbody.innerHTML = "";
       userCourses.forEach((course, ci) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td class="cell-course"><span class="course-icon-badge" style="background:${course.color}">${course.icon}</span><span>${course.name}</span></td>
-          <td class="cell-date"><input type="text" placeholder="cth. 15/9" value="${trackerState.dates[ci] || ''}" oninput="saveDate(${ci}, this.value)"></td>
+          <td class="cell-course">
+            <span class="course-icon-badge" style="background:${course.color}">${course.icon}</span>
+            <span>${course.name}</span>
+          </td>
+          <td class="cell-date">
+            <div style="display:flex; align-items:center; gap:4px;">
+              <input type="text" placeholder="cth. 15/9" value="${trackerState.dates[ci] || ''}" oninput="saveDate(${ci}, this.value)">
+              <button class="btn-del" onclick="clearRowJadwal(${ci})" title="Reset Jadwal & Checklist Baris Ini">✕</button>
+            </div>
+          </td>
         `;
         for (let si = 0; si < SESSION_DATES.length; si++) {
           const sessionNum = si + 1;
           const td = document.createElement('td');
           td.className = `sess-cell cell-${sessionNum}`;
 
-          // Sesi 3, 5, 7 -> Absen, Diskusi, Tugas
-          // Sesi 1, 2, 4, 6, 8 -> Absen, Diskusi
           let kinds = ["absen", "diskusi"];
           if ([3, 5, 7].includes(sessionNum)) {
             kinds = ["absen", "diskusi", "tugas"];
@@ -1107,19 +1136,38 @@
     function saveDate(ci, val) { trackerState.dates[ci] = val; saveTracker(); }
     function saveTracker() { localStorage.setItem(KEY_TRACKER, JSON.stringify(trackerState)); }
 
+    /* TO DO LIST HANDLERS */
     function buildTodos() {
       const list = document.getElementById('todoList'); list.innerHTML = "";
       (trackerState.todos || []).forEach((t, i) => {
-        list.innerHTML += `<li class="todo-item ${t.done ? 'done' : ''}"><input type="checkbox" class="chk" ${t.done ? 'checked' : ''} onclick="toggleTodo(${i})"> <input type="text" value="${t.text}" readonly></li>`;
+        list.innerHTML += `
+          <li class="todo-item ${t.done ? 'done' : ''}">
+            <input type="checkbox" class="chk" ${t.done ? 'checked' : ''} onclick="toggleTodo(${i})">
+            <input type="text" value="${t.text}" readonly>
+            <button class="btn-del" onclick="deleteTodo(${i})" title="Hapus Tugas">✕</button>
+          </li>`;
       });
     }
-    function toggleTodo(i) { trackerState.todos[i].done = !trackerState.todos[i].done; saveTracker(); buildTodos(); }
+
+    function toggleTodo(i) {
+      trackerState.todos[i].done = !trackerState.todos[i].done;
+      saveTracker();
+      buildTodos();
+    }
+
+    function deleteTodo(i) {
+      trackerState.todos.splice(i, 1);
+      saveTracker();
+      buildTodos();
+    }
 
     document.getElementById('addTodoBtn').addEventListener('click', () => {
       const input = document.getElementById('newTodoInput');
       if (!input.value.trim()) return;
       trackerState.todos.push({ text: input.value.trim(), done: false });
-      input.value = ""; saveTracker(); buildTodos();
+      input.value = "";
+      saveTracker();
+      buildTodos();
     });
 
     document.getElementById('catatan').addEventListener('input', (e) => { trackerState.catatan = e.target.value; saveTracker(); });
